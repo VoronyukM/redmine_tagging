@@ -32,6 +32,8 @@ api.array :issues, api_meta(:total_count => @issue_count, :offset => @offset, :l
         end
       end if include_in_api_response?('attachments')
 
+      render_api_issue_children(issue, api) if include_in_api_response?('children')
+
       api.array :tags do
         issue.issue_tags.each do |issue_tag|
           api.tag(:id => issue_tag.tag[1..-1])
