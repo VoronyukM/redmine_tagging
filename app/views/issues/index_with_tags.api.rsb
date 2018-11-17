@@ -32,6 +32,25 @@ api.array :issues, api_meta(:total_count => @issue_count, :offset => @offset, :l
         end
       end if include_in_api_response?('attachments')
 
+      api.array :journals do
+        issue.journals.each do |journal|
+          api.journal :id => journal.id do
+            api.user(:id => journal.user_id, :name => journal.user.name) unless journal.user.nil?
+            api.notes journal.notes
+            api.created_on journal.created_on
+            api.send_to_owner journal.send_to_owner
+            api.array :details do
+              journal.details.each do |detail|
+                api.detail :property => detail.property, :name => detail.prop_key do
+                  api.old_value detail.old_value
+                  api.new_value detail.value
+                end
+              end
+            end
+          end
+        end
+      end if include_in_api_response?('journals')
+
       render_api_issue_children(issue, api) if include_in_api_response?('children')
 
       api.array :tags do
